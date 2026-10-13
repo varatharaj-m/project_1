@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_title %}Analysis History{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Audit trail</p>
+    <h2>Analysis History</h2>
+    <p class="page-copy">Search and filter saved analyses from the local workspace. Results come from the application database only.</p>
+  </div>
+</section>
+
+<section class="toolbar-card">
+  <div class="history-filters">
+    <input class="form-control" id="historySearch" type="search" placeholder="Search ID, type, label, model">
+    <select class="form-select" id="historyType">
+      <option value="">All types</option>
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+      <option value="audio">Audio</option>
+      <option value="text">Text</option>
+      <option value="news">News</option>
+    </select>
+    <select class="form-select" id="historyRisk">
+      <option value="">All risks</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+      <option value="needs_review">Needs review</option>
+    </select>
+    <select class="form-select" id="historySort">
+      <option value="newest">Newest</option>
+      <option value="oldest">Oldest</option>
+      <option value="risk">Risk level</option>
+    </select>
+  </div>
+</section>
+
+<section class="panel mt-3">
+  <div class="panel-title-row"><h2>Saved analyses</h2><span id="historyTotal" class="muted-label">0 items</span></div>
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle dashboard-table">
+      <thead><tr><th>ID</th><th>Type</th><th>Created</th><th>Risk</th><th>Label</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="historyRows"></tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history.js') }}"></script>{% endblock %}

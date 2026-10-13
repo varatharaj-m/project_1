@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+instance/
+.pytest_cache/
+.pytest-tmp/
+pytest-cache-files-*/
+.coverage
+htmlcov/
+model_weights/*
+!model_weights/README.md
+!model_weights/.gitkeep
+datasets/*
+!datasets/README.md
+!datasets/.gitkeep

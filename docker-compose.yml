@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./instance:/app/instance
+      - ./model_weights:/app/model_weights
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: cybershield
+      MYSQL_USER: cybershield
+      MYSQL_PASSWORD: cybershield
+      MYSQL_ROOT_PASSWORD: cybershield-root
+    ports:
+      - "3306:3306"

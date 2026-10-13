@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block page_title %}Text & Cyberbullying Detection{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Language safety</p>
+    <h2>Text & Cyberbullying Detection</h2>
+    <p class="page-copy">Classify harmful language signals with transparent model status, labels, confidence values when available, and review-focused risk levels.</p>
+  </div>
+</section>
+
+<div class="analysis-layout">
+  <form class="panel" id="textForm">
+    <p class="panel-kicker">Text module</p>
+    <h2>Analyze message content</h2>
+    <label class="form-label" for="textInput">Message or conversation excerpt</label>
+    <textarea class="form-control" id="textInput" name="text" rows="12" maxlength="5000" placeholder="Paste text for harmful-language screening"></textarea>
+    <div class="counter-row">
+      <span><span id="textChars">0</span>/5000 characters</span>
+      <span><span id="textWords">0</span> words</span>
+    </div>
+    <div class="button-row">
+      <button class="btn btn-primary" type="submit"><i data-lucide="scan-text"></i> Analyze Text</button>
+      <button class="btn btn-outline-light" type="button" data-clear-target="textInput"><i data-lucide="eraser"></i> Clear</button>
+      <button class="btn btn-outline-light" type="button" id="textExample"><i data-lucide="wand-sparkles"></i> Example</button>
+    </div>
+  </form>
+  <section class="panel">
+    <p class="panel-kicker">Screening output</p>
+    <h2>Result</h2>
+    <div id="textResult" class="result-box result-empty">Run an analysis to see supported labels, confidence values, model status, and limitations.</div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>{% endblock %}

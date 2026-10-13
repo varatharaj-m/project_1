@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block page_title %}Security Intelligence Overview{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Unified threat operations</p>
+    <h2>Security Intelligence Overview</h2>
+    <p class="page-copy">Monitor manipulated media, synthetic content, misinformation, and harmful online text from one unified workspace.</p>
+  </div>
+  <div class="dashboard-actions">
+    <span class="live-pill"><span></span> Live workspace</span>
+    <button class="btn btn-outline-light" id="refreshStats" type="button"><i data-lucide="refresh-cw"></i> Refresh</button>
+  </div>
+</section>
+
+<section class="metric-grid">
+  <article class="metric metric-blue"><span><i data-lucide="activity"></i>Total analyses</span><strong id="totalAnalyses">0</strong><small>Completed screenings</small></article>
+  <article class="metric metric-red"><span><i data-lucide="shield-alert"></i>High priority</span><strong id="highPriority">0</strong><small>High or review-needed results</small></article>
+  <article class="metric metric-violet"><span><i data-lucide="scan-eye"></i>Image and video</span><strong id="imageVideoCount">0</strong><small>Media visual checks</small></article>
+  <article class="metric metric-cyan"><span><i data-lucide="audio-lines"></i>Audio and text</span><strong id="audioTextCount">0</strong><small>Speech and language checks</small></article>
+  <article class="metric metric-green"><span><i data-lucide="server-cog"></i>Available services</span><strong id="availableModels">0</strong><small id="modelCount">0 registered</small></article>
+</section>
+
+<section class="dashboard-grid">
+  <div class="panel">
+    <div class="panel-title-row"><h2>Risk Distribution</h2><span class="muted-label">Real results</span></div>
+    <div class="chart-box"><canvas id="riskChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title-row"><h2>Detection Activity</h2><span class="muted-label">By day</span></div>
+    <div class="chart-box"><canvas id="activityChart"></canvas></div>
+  </div>
+  <div class="panel model-panel">
+    <div class="panel-title-row"><h2>Model Health</h2><span class="muted-label">Backend state</span></div>
+    <div id="modelHealth" class="model-health-list"></div>
+  </div>
+</section>
+
+<section class="analytics-grid">
+  <div class="panel">
+    <div class="panel-title-row"><h2>Modality Breakdown</h2><span class="muted-label">Stored analyses</span></div>
+    <div class="chart-box"><canvas id="typeChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title-row"><h2>Recent High-Risk Findings</h2><span id="findingCount" class="muted-label">0 findings</span></div>
+    <div id="highRiskRows" class="high-risk-list"></div>
+  </div>
+</section>
+
+<section class="panel history-panel mt-3">
+  <div class="panel-title-row">
+    <h2>Recent Analysis History</h2>
+    <span id="historyCount" class="muted-label">0 recent</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle dashboard-table">
+      <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Risk</th><th>Model</th><th>Report</th></tr></thead>
+      <tbody id="recentRows"></tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

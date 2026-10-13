@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block page_title %}Fake News Detection{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Misinformation analysis</p>
+    <h2>Fake News Detection</h2>
+    <p class="page-copy">Screen claims and article text as an AI prediction with clear confidence, model status, and limitations. No external fact-checking evidence is invented.</p>
+  </div>
+</section>
+
+<div class="analysis-layout">
+  <form class="panel" id="newsForm">
+    <p class="panel-kicker">News module</p>
+    <h2>Analyze claim or article</h2>
+    <label class="form-label" for="headlineInput">Headline</label>
+    <input class="form-control mb-3" id="headlineInput" name="headline" placeholder="Optional headline">
+    <label class="form-label" for="sourceInput">Source URL</label>
+    <input class="form-control mb-3" id="sourceInput" name="source_url" type="url" placeholder="Optional source URL">
+    <label class="form-label" for="newsInput">Article text or claim</label>
+    <textarea class="form-control" id="newsInput" name="text" rows="10" maxlength="12000" placeholder="Paste a headline, claim, or article"></textarea>
+    <div class="counter-row">
+      <span><span id="newsChars">0</span>/12000 characters</span>
+      <span><span id="newsWords">0</span> words</span>
+    </div>
+    <div class="button-row">
+      <button class="btn btn-primary" type="submit"><i data-lucide="radar"></i> Analyze News</button>
+      <button class="btn btn-outline-light" type="button" data-clear-target="newsInput"><i data-lucide="eraser"></i> Clear</button>
+      <button class="btn btn-outline-light" type="button" id="newsExample"><i data-lucide="wand-sparkles"></i> Example</button>
+    </div>
+  </form>
+  <section class="panel">
+    <p class="panel-kicker">Screening output</p>
+    <h2>Result</h2>
+    <div id="newsResult" class="result-box result-empty">Run an analysis to see prediction labels, confidence values, model status, and limitations.</div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>{% endblock %}

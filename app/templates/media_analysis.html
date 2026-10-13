@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block page_title %}Multimodal Media Detection{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Media authenticity workspace</p>
+    <h2>Image, Video, and Audio Detection</h2>
+    <p class="page-copy">Upload supported media for safe decoding, model availability checks, metadata extraction, transcription where configured, and honest risk reporting.</p>
+  </div>
+</section>
+
+<div class="media-stack">
+  <form class="upload-form media-workspace" id="image" data-endpoint="/api/v1/analyze/image" data-kind="image">
+    <section class="upload-card">
+      <p class="panel-kicker">Image deepfake detection</p>
+      <h2>Upload image</h2>
+      <label class="dropzone">
+        <input name="file" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,image/*" required>
+        <span class="dropzone-content"><i data-lucide="image-up"></i><strong>Drop image here or browse</strong><span>JPG, PNG, GIF, WEBP, BMP. Max size follows backend upload limits.</span></span>
+      </label>
+      <div class="file-meta"></div>
+      <div class="preview-frame"><span class="preview-empty">Image preview</span></div>
+      <div class="button-row">
+        <button class="btn btn-primary" type="submit"><i data-lucide="scan-eye"></i> Analyze Image</button>
+        <button class="btn btn-outline-light remove-file" type="button"><i data-lucide="x"></i> Remove</button>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="panel-kicker">Image result</p>
+      <h2>Authenticity signal</h2>
+      <div class="result-box result-empty">Run an image analysis to see the predicted labels, model status, confidence values, and timestamp.</div>
+    </section>
+  </form>
+
+  <form class="upload-form media-workspace" id="video" data-endpoint="/api/v1/analyze/video" data-kind="video">
+    <section class="upload-card">
+      <p class="panel-kicker">Video deepfake detection</p>
+      <h2>Upload video</h2>
+      <label class="dropzone">
+        <input name="file" type="file" accept=".mp4,.mov,.avi,.mkv,video/*" required>
+        <span class="dropzone-content"><i data-lucide="file-video"></i><strong>Drop video here or browse</strong><span>MP4, MOV, AVI, MKV. Frame evidence appears only when produced by backend models.</span></span>
+      </label>
+      <div class="file-meta"></div>
+      <div class="preview-frame"><span class="preview-empty">Video preview</span></div>
+      <div class="button-row">
+        <button class="btn btn-primary" type="submit"><i data-lucide="scan-line"></i> Analyze Video</button>
+        <button class="btn btn-outline-light remove-file" type="button"><i data-lucide="x"></i> Remove</button>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="panel-kicker">Video result</p>
+      <h2>Metadata and authenticity signal</h2>
+      <div class="result-box result-empty">Run a video analysis to see metadata, model status, risk level, and limitations.</div>
+    </section>
+  </form>
+
+  <form class="upload-form media-workspace" id="audio" data-endpoint="/api/v1/analyze/audio" data-kind="audio">
+    <section class="upload-card">
+      <p class="panel-kicker">Audio deepfake detection</p>
+      <h2>Upload audio</h2>
+      <label class="dropzone">
+        <input name="file" type="file" accept=".wav,.mp3,.m4a,.ogg,.flac,audio/*" required>
+        <span class="dropzone-content"><i data-lucide="audio-lines"></i><strong>Drop audio here or browse</strong><span>WAV, MP3, M4A, OGG, FLAC. Transcription and authenticity are reported separately.</span></span>
+      </label>
+      <div class="file-meta"></div>
+      <div class="preview-frame"><span class="preview-empty">Audio preview</span></div>
+      <div class="button-row">
+        <button class="btn btn-primary" type="submit"><i data-lucide="waveform"></i> Analyze Audio</button>
+        <button class="btn btn-outline-light remove-file" type="button"><i data-lucide="x"></i> Remove</button>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="panel-kicker">Audio result</p>
+      <h2>Transcription and synthetic-audio signal</h2>
+      <div class="result-box result-empty">Run an audio analysis to see Whisper transcription status and synthetic-audio model status separately.</div>
+    </section>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>{% endblock %}

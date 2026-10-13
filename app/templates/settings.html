@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block page_title %}Settings{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div>
+    <p class="eyebrow">Workspace</p>
+    <h2>Settings</h2>
+    <p class="page-copy">ShieldVision is currently configured as an open local workspace. Authentication UI is disabled, and analyses are saved under the local workspace profile.</p>
+  </div>
+</section>
+<section class="content-grid">
+  <article class="panel">
+    <p class="panel-kicker">Profile</p>
+    <h2>Local Workspace</h2>
+    <p class="result-explanation">Current user: {{ user.username if user else 'local_workspace' }}. This keeps database ownership intact without showing a login screen.</p>
+  </article>
+  <article class="panel">
+    <p class="panel-kicker">Models</p>
+    <h2>Backend controlled</h2>
+    <p class="result-explanation">Model paths, keys, and inference settings stay on the Flask backend. Use environment variables and server configuration to enable unavailable adapters.</p>
+  </article>
+  <article class="panel">
+    <p class="panel-kicker">OpenAI</p>
+    <h2>API key</h2>
+    <p class="result-explanation">Use a temporary key for this session or opt in to save it in the local project settings. Persisted keys are less secure and should only be used for local testing.</p>
+    <form id="openaiKeyForm" class="mt-3">
+      <div class="mb-3">
+        <label for="openaiApiKey" class="form-label">OpenAI API key</label>
+        <input id="openaiApiKey" type="password" class="form-control" autocomplete="off" placeholder="sk-..." />
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" id="persistOpenAiKey" type="checkbox">
+        <label class="form-check-label" for="persistOpenAiKey">Persist in project settings (.env) - not recommended</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Save key</button>
+    </form>
+    <p id="openaiKeyStatus" class="result-explanation mt-3">{% if openai_api_key_configured %}A key is configured for this workspace.{% else %}No OpenAI API key is configured yet.{% endif %}</p>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("openaiKeyForm");
+    const status = document.getElementById("openaiKeyStatus");
+    const apiKeyInput = document.getElementById("openaiApiKey");
+    const persistCheckbox = document.getElementById("persistOpenAiKey");
+
+    async function loadState() {
+      const response = await fetch("/api/v1/dashboard/settings");
+      const data = await response.json();
+      if (data.openai_api_key_configured) {
+        status.textContent = `OpenAI key is configured (${data.source}).`;
+        apiKeyInput.placeholder = data.openai_api_key_preview || "sk-...";
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        status.textContent = "Enter an OpenAI API key before saving.";
+        return;
+      }
+
+      status.textContent = "Saving API key...";
+      const response = await fetch("/api/v1/dashboard/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ api_key: apiKey, persist: persistCheckbox.checked }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        status.textContent = data.error === "api_key_required" ? "An API key is required." : "Unable to save the API key.";
+        return;
+      }
+
+      apiKeyInput.value = "";
+      if (data.persisted) {
+        status.textContent = "OpenAI API key saved to project settings (.env). This is less secure and should only be used for local testing.";
+      } else {
+        status.textContent = "OpenAI API key saved for this session only. You will need to re-enter it after restarting the app.";
+      }
+    });
+
+    loadState().catch(() => {
+      status.textContent = "Unable to fetch the current OpenAI API key settings.";
+    });
+  });
+</script>
+{% endblock %}
