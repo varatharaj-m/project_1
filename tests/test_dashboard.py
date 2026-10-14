@@ -6,10 +6,14 @@ def test_dashboard_stats(auth_client):
 
 
 def test_frontend_pages_render(client):
-    for path in ["/", "/dashboard", "/text", "/news", "/media", "/history", "/reports", "/settings"]:
+    for path in ["/", "/dashboard", "/text", "/news", "/media", "/history", "/reports"]:
         response = client.get(path)
         assert response.status_code == 200
         assert b"ShieldVision" in response.data
+
+    settings = client.get("/settings")
+    assert settings.status_code == 302
+    assert settings.headers["Location"] == "/dashboard"
 
 
 def test_dashboard_stats_without_login(client):

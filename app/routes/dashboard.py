@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from flask import Blueprint, current_app, jsonify, render_template, request, session
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, session
 
 from app.models import Analysis, AnalysisResult
 from app.routes.auth import current_user, login_required
@@ -78,11 +78,7 @@ def _persist_openai_api_key(api_key):
 
 @bp.get("/settings")
 def settings_page():
-    return render_template(
-        "settings.html",
-        user=current_user(),
-        openai_api_key_configured=bool(_resolve_openai_api_key()),
-    )
+    return redirect("/dashboard")
 
 
 @api.get("/settings")

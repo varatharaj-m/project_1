@@ -44,11 +44,22 @@ class Config:
     TEXT_MODEL_PATH = _optional_project_path(
         os.getenv("TEXT_MODEL_PATH", "model_weights/text_classifier.joblib")
     )
+    SENTIMENT_MODEL_PATH = _optional_project_path(
+        os.getenv("SENTIMENT_MODEL_PATH", "")
+    )
     FAKE_NEWS_MODEL_NAME = os.getenv("FAKE_NEWS_MODEL_NAME", "tfidf-logreg-baseline")
+    FAKE_NEWS_MODEL_PATH = _optional_project_path(
+        os.getenv("FAKE_NEWS_MODEL_PATH", "model_weights/fake_news_classifier.joblib")
+    )
     IMAGE_MODEL_PATH = _optional_project_path(os.getenv("IMAGE_MODEL_PATH", ""))
     ALLOW_NONCOMMERCIAL_MODELS = os.getenv("ALLOW_NONCOMMERCIAL_MODELS", "false").lower() == "true"
-    VIDEO_MODEL_PATH = _optional_project_path(os.getenv("VIDEO_MODEL_PATH", ""))
-    AUDIO_MODEL_PATH = _optional_project_path(os.getenv("AUDIO_MODEL_PATH", ""))
+    VIDEO_MODEL_PATH = _optional_project_path(
+        os.getenv("VIDEO_MODEL_PATH") or "model_weights/adapters/image_deepfake_adapter.json"
+    )
+    VIDEO_MAX_FRAMES = int(os.getenv("VIDEO_MAX_FRAMES", "8"))
+    AUDIO_MODEL_PATH = _optional_project_path(
+        os.getenv("AUDIO_MODEL_PATH") or "model_weights/adapters/audio_deepfake_adapter.json"
+    )
     WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL_NAME", "")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 

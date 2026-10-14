@@ -50,3 +50,28 @@ def test_multilabel_training_supports_jigsaw_schema(app, tmp_path):
 
     assert metadata["mode"] == "multilabel"
     assert set(result["predicted_labels"]) == {"toxic", "insult"}
+
+
+def test_not_cyberbullying_dataset_label_is_treated_as_benign():
+    assert TextDetector._is_non_harmful("not_cyberbullying") is True
+
+
+def test_sentiment_model_is_reported_separately(app, tmp_path):
+    dataset = tmp_path / "sentiment.csv"
+    output = tmp_path / "sentiment_classifier.joblib"
+    rows = [
+        {"text": f"sunny cheerful wonderful support {index}", "label": "positive"}
+        for index in range(12)
+    ] + [
+        {"text": f"gloomy awful angry sad {index}", "label": "negative"}
+        for index in range(12)
+    ]
+    pd.DataFrame(rows).to_csv(dataset, index=False)
+    train_model(dataset, output, text_column="text", label_column="label")
+    app.config["SENTIMENT_MODEL_PATH"] = str(output)
+
+    result = TextDetector().analyze("sunny wonderful cheerful support")
+
+    assert result["confidence_scores"]["sentiment"] == "positive"
+    assert result["confidence_scores"]["sentiment_confidence"] > 0.5
+    assert "does not determine the harmful-language label" in result["explanation"]

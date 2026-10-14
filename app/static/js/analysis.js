@@ -179,11 +179,21 @@ function renderAnalysisResult(target, data) {
 }
 
 function renderModuleMini(result) {
+  const confidence = result.confidence || {};
+  const candidate = confidence.candidate_label;
+  const classScores = ["real", "fake"]
+    .filter((label) => typeof confidence[label] === "number")
+    .map((label) => `${titleize(label)} ${confidenceValue(confidence[label])}`)
+    .join(" · ");
+  const candidateDetail = candidate
+    ? `<small>Model candidate: ${escapeHtml(titleize(candidate))}${classScores ? ` · ${escapeHtml(classScores)}` : ""}</small>`
+    : "";
   return `
     <article>
       <strong>${escapeHtml(titleize(result.module))}</strong>
       <span class="risk-pill risk-${escapeHtml(result.risk_category)}">${escapeHtml(titleize(result.risk_category))}</span>
       <small>${escapeHtml(titleize(result.model_status))}</small>
+      ${candidateDetail}
     </article>
   `;
 }

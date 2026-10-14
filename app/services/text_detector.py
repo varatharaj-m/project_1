@@ -1,9 +1,9 @@
 import re
-from functools import lru_cache
 from pathlib import Path
 
 from flask import current_app
 
+from .model_loading import load_classifier
 from .model_registry import ModelState, registry
 
 
@@ -30,6 +30,7 @@ NON_HARMFUL_LABELS = {
     "no bullying",
     "no cyberbullying",
     "no toxic",
+    "not cyberbullying",
     "not bullying",
     "not cyberbullying",
     "not toxic",
@@ -45,30 +46,31 @@ LABEL_ALIASES = {
 }
 
 
-@lru_cache(maxsize=4)
-def _load_model(model_path):
-    import joblib
-
-    return joblib.load(model_path)
-
-
 class TextDetector:
     module_name = "cyberbullying"
 
     def __init__(self):
         self.model_path = current_app.config.get("TEXT_MODEL_PATH", "")
         self.trained_model = None
+        self.sentiment_model = None
         self.model_name = current_app.config.get("TEXT_MODEL_NAME", "lightweight-keyword-baseline")
         detail = "Rule-based lightweight baseline active."
         if self.model_path:
             try:
                 if not Path(self.model_path).is_file():
                     raise FileNotFoundError(self.model_path)
-                self.trained_model = _load_model(str(Path(self.model_path).resolve()))
+                self.trained_model = load_classifier(self.model_path)
                 self.model_name = "trained-tfidf-logistic-regression"
                 detail = "Configured trained text classifier active."
             except (OSError, ValueError, ImportError, EOFError) as error:
                 detail = f"Trained text model unavailable; keyword baseline active ({error})."
+        sentiment_path = current_app.config.get("SENTIMENT_MODEL_PATH", "")
+        if sentiment_path and Path(sentiment_path).is_file():
+            try:
+                self.sentiment_model = load_classifier(sentiment_path)
+                detail += " Separate dataset-trained sentiment signal active."
+            except (OSError, ValueError, ImportError, EOFError) as error:
+                detail += f" Sentiment model unavailable ({error})."
         registry.set("text", ModelState(name=self.model_name, status="available", detail=detail))
 
     def analyze(self, text):
@@ -79,8 +81,14 @@ class TextDetector:
             return self._invalid(f"Text exceeds the configured {max_chars} character limit.")
 
         if self.trained_model:
-            return self._analyze_with_model(text)
+            result = self._analyze_with_model(text)
+        else:
+            result = self._analyze_with_baseline(text)
+        if self.sentiment_model:
+            self._add_sentiment_signal(text, result)
+        return result
 
+    def _analyze_with_baseline(self, text):
         lowered = text.lower()
         found = sorted({label for term, label in HARMFUL_TERMS.items() if re.search(rf"\b{re.escape(term)}\b", lowered)})
         appearance_mockery = self._has_appearance_mockery(lowered)
@@ -107,6 +115,18 @@ class TextDetector:
                 "and not proof of intent. Install a validated transformer model for production use."
             ),
         }
+
+    def _add_sentiment_signal(self, text, result):
+        model = self.sentiment_model["model"]
+        probabilities = model.predict_proba([text])[0]
+        classes = model.named_steps["classifier"].classes_
+        scores = {str(label).strip().lower(): float(score) for label, score in zip(classes, probabilities)}
+        sentiment = max(scores, key=scores.get)
+        result["confidence_scores"]["sentiment"] = sentiment
+        result["confidence_scores"]["sentiment_confidence"] = round(scores[sentiment], 3)
+        result["explanation"] += (
+            " Sentiment is reported separately and does not determine the harmful-language label."
+        )
 
     def _analyze_with_model(self, text):
         model = self.trained_model["model"]

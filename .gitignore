@@ -12,6 +12,9 @@ htmlcov/
 model_weights/*
 !model_weights/README.md
 !model_weights/.gitkeep
+!model_weights/adapters/
+model_weights/adapters/*
+!model_weights/adapters/*.json
 datasets/*
 !datasets/README.md
 !datasets/.gitkeep

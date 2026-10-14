@@ -1,0 +1,14 @@
+{
+  "model_name": "external-shieldvision-audio-cnn",
+  "model_version": "shieldvision-audio-h5-1.0",
+  "source": "ShieldVision-Multimodal-Detection/audio/backend/deepfake_model.h5",
+  "checkpoint": "../external_sources/ShieldVision-Multimodal-Detection/audio/backend/deepfake_model.h5",
+  "sample_rate": 22050,
+  "duration_seconds": 3,
+  "mfcc_features": 40,
+  "expected_frames": 130,
+  "real_class_index": 0,
+  "fake_class_index": 1,
+  "validated": false,
+  "note": "Checkpoint requires local extraction and independent audio validation before authenticity classification."
+}

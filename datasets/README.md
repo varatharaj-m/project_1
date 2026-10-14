@@ -4,6 +4,38 @@ Place only datasets whose terms permit your intended use here. Document source, 
 
 ## Referenced sources
 
+## Audio Anti-Spoof Evaluation
+
+[SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA](https://huggingface.co/datasets/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA) is a 71,237-clip, 16-kHz mono evaluation split labeled `bonafide` (0) and `spoof` (1). The dataset card declares the **ODC-By** license. This repository streams it for held-out evaluation only; it has no training split and must not be used to fit or tune the audio model. The full hosted dataset is about 4.39 GB. See [ml/README.md](../ml/README.md) for evaluation commands.
+
+## User-provided training files
+
+Local copies extracted to the git-ignored `datasets/raw/user_uploads/` directory:
+
+- `cyberbullying_tweets.csv` has 47,692 tweets labeled across six cyberbullying categories. `not_cyberbullying` is treated as the benign class; the other five labels remain separate.
+- `Fake.csv` and `True.csv` are the paired ISOT fake/true article files used by the news classifier. The model learns dataset and writing-style patterns and is not a fact-checking service.
+- `train-00000-of-00001.parquet` and `test-00000-of-00001.parquet` contain `positive`/`negative` annotations. These are sentiment labels, not toxicity labels. The test file is held out and is not used to fit the model.
+
+The uploaded files did not include license metadata. Check the original source terms before redistributing the datasets or deploying derived models.
+
+### Prepare Local Files
+
+Keep the original archives outside Git, then extract only the required files into the ignored local data directory:
+
+```powershell
+python -m scripts.prepare_uploaded_datasets `
+	--cyberbullying-zip "C:\path\to\archive (2).zip" `
+	--isot-zip "C:\path\to\archive.zip" `
+	--sentiment-train "C:\path\to\train-00000-of-00001.parquet" `
+	--sentiment-test "C:\path\to\test-00000-of-00001.parquet" `
+	--image-model-archive "C:\path\to\ShieldVision-Multimodal-Detection-main.zip" `
+	--audio-model-archive "C:\path\to\ShieldVision-Multimodal-Detection-main.zip"
+
+python -m scripts.train_uploaded_models
+```
+
+The sentiment and model-archive options are optional. Add `--include-sentiment` to the training command only to retrain and evaluate that separate experimental classifier. Image and audio checkpoints are extracted into ignored `model_weights/`; install `requirements-image.txt` to enable Keras inference. The same image checkpoint is sampled for video screening. Image/audio candidates remain review-only until independently validated; video has no video-level trained checkpoint. The uploaded source archive has no license file, so confirm rights before use or redistribution. Do not commit raw files or model weights.
+
 - [Cyberbullying Classification](https://www.kaggle.com/datasets/andrewmvd/cyberbullying-classification), referenced by [praj-tarun/cyberbullying-detection](https://github.com/praj-tarun/cyberbullying-detection). Obtain it from Kaggle and follow its current dataset terms. Expected fields include `tweet` and `cyberbullying_type`.
 - [Jigsaw Toxic Comment Classification Challenge](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge), also referenced by the project above. Kaggle account/competition terms may apply. Its `train.csv` commonly has `comment_text` and six binary toxicity labels.
 - [HateMM](https://github.com/loris-fab/Deep_learning) is cited by the multimodal hate-speech project; the dataset is not bundled in that repository. Request/access it under the dataset authors' terms before using it.

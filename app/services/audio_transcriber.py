@@ -1,7 +1,9 @@
+import subprocess
 from pathlib import Path
 from functools import lru_cache
 
 from flask import current_app
+import numpy as np
 
 from .model_registry import ModelState, registry
 
@@ -67,5 +69,32 @@ def _load_whisper_model(model_name):
 
 def _transcribe_audio(model_name, path):
     model = _load_whisper_model(model_name)
-    result = model.transcribe(path, fp16=False)
+    import imageio_ffmpeg
+
+    command = [
+        imageio_ffmpeg.get_ffmpeg_exe(),
+        "-nostdin",
+        "-threads",
+        "0",
+        "-i",
+        str(path),
+        "-f",
+        "s16le",
+        "-ac",
+        "1",
+        "-acodec",
+        "pcm_s16le",
+        "-ar",
+        "16000",
+        "-",
+    ]
+    try:
+        decoded = subprocess.run(command, capture_output=True, check=True).stdout
+    except subprocess.CalledProcessError as error:
+        detail = error.stderr.decode("utf-8", errors="replace").strip()
+        raise ValueError(f"FFmpeg could not decode this audio: {detail or error}") from error
+    if not decoded:
+        raise ValueError("FFmpeg returned no audio samples.")
+    audio = np.frombuffer(decoded, dtype="<i2").astype(np.float32) / 32768.0
+    result = model.transcribe(audio, fp16=False)
     return (result.get("text") or "").strip()
